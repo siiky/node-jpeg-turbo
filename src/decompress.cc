@@ -60,6 +60,13 @@ int decompress(unsigned char* srcData, uint32_t srcLength, uint32_t format, int*
   err = tjDecompress2(handle, srcData, srcLength, *dstData, *width, 0, *height, format, TJFLAG_FASTDCT);
 
   if(err != 0) {
+
+    // This is a non-fatal error, can be caused by logitech webcam
+    // We still get a good image
+    if (err == -1) {
+      return 0;
+    }
+
     _throw(tjGetErrorStr());
   }
 
