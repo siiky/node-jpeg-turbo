@@ -143,8 +143,8 @@ class CompressWorker : public AsyncWorker {
         dstObject = NewBuffer((char*)this->dstData, this->jpegSize, compressBufferFreeCallback, NULL).ToLocalChecked();
       }
 
-      obj->Set(ctx, New("data").ToLocalChecked(), dstObject);
-      obj->Set(ctx, New("size").ToLocalChecked(), New((uint32_t) this->jpegSize));
+      obj->Set(ctx, New("data").ToLocalChecked(), dstObject).Check();
+      obj->Set(ctx, New("size").ToLocalChecked(), New((uint32_t) this->jpegSize)).Check();
 
       v8::Local<v8::Value> argv[] = {
         Nan::Null(),
