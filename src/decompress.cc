@@ -123,6 +123,7 @@ class DecompressWorker : public AsyncWorker {
     }
 
     void HandleOKCallback () {
+      auto ctx = Nan::GetCurrentContext();
       Local<Object> obj = New<Object>();
       Local<Object> dstObject;
 
@@ -133,11 +134,11 @@ class DecompressWorker : public AsyncWorker {
         dstObject = NewBuffer((char*)this->dstData, this->dstLength).ToLocalChecked();
       }
 
-      obj->Set(New("data").ToLocalChecked(), dstObject);
-      obj->Set(New("width").ToLocalChecked(), New(this->width));
-      obj->Set(New("height").ToLocalChecked(), New(this->height));
-      obj->Set(New("size").ToLocalChecked(), New(this->dstLength));
-      obj->Set(New("format").ToLocalChecked(), New(this->format));
+      obj->Set(ctx, New("data").ToLocalChecked(), dstObject).Check();
+      obj->Set(ctx, New("width").ToLocalChecked(), New(this->width)).Check();
+      obj->Set(ctx, New("height").ToLocalChecked(), New(this->height)).Check();
+      obj->Set(ctx, New("size").ToLocalChecked(), New(this->dstLength)).Check();
+      obj->Set(ctx, New("format").ToLocalChecked(), New(this->format)).Check();
 
       Local<Value> argv[] = {
         Null(),
@@ -160,6 +161,7 @@ class DecompressWorker : public AsyncWorker {
 };
 
 void decompressParse(const Nan::FunctionCallbackInfo<Value>& info, bool async) {
+  auto ctx = Nan::GetCurrentContext();
   int retval = 0;
   int cursor = 0;
 
@@ -218,12 +220,12 @@ void decompressParse(const Nan::FunctionCallbackInfo<Value>& info, bool async) {
   // Options are optional
   if (options->IsObject()) {
     // Format of output buffer
-    formatObject = options->Get(New("format").ToLocalChecked());
+    formatObject = options->Get(ctx, New("format").ToLocalChecked()).ToLocalChecked();
     if (!formatObject->IsUndefined()) {
       if (!formatObject->IsUint32()) {
         _throw("Invalid format");
       }
-      format = formatObject->Uint32Value();
+      format = formatObject->Uint32Value(ctx).ToChecked();
     }
   }
 
@@ -254,11 +256,11 @@ void decompressParse(const Nan::FunctionCallbackInfo<Value>& info, bool async) {
       dstObject = NewBuffer((char*)dstData, dstLength).ToLocalChecked();
     }
 
-    obj->Set(New("data").ToLocalChecked(), dstObject);
-    obj->Set(New("width").ToLocalChecked(), New(width));
-    obj->Set(New("height").ToLocalChecked(), New(height));
-    obj->Set(New("size").ToLocalChecked(), New(dstLength));
-    obj->Set(New("format").ToLocalChecked(), New(format));
+    obj->Set(ctx, New("data").ToLocalChecked(), dstObject).Check();
+    obj->Set(ctx, New("width").ToLocalChecked(), New(width)).Check();
+    obj->Set(ctx, New("height").ToLocalChecked(), New(height)).Check();
+    obj->Set(ctx, New("size").ToLocalChecked(), New(dstLength)).Check();
+    obj->Set(ctx, New("format").ToLocalChecked(), New(format)).Check();
 
     info.GetReturnValue().Set(obj);
     return;
