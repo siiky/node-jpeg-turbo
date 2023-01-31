@@ -9,17 +9,16 @@ NAN_METHOD(BufferSize) {
   auto ctx = Nan::GetCurrentContext();
   int retval = 0;
 
-  uint32_t dstLength = 0;
-  uint32_t height = 0;
-  uint32_t width = 0;
-  uint32_t jpegSubsamp = NJT_DEFAULT_SUBSAMPLING;
-  Local<Value> widthObject;
-  Local<Value> heightObject;
-  Local<Value> sampObject;
-  Local<Object> options;
-
   // Input
   Callback *callback = NULL;
+  Local<Object> options;
+  Local<Value> sampObject;
+  uint32_t jpegSubsamp = NJT_DEFAULT_SUBSAMPLING;
+  Local<Value> widthObject;
+  uint32_t width = 0;
+  Local<Value> heightObject;
+  uint32_t height = 0;
+  uint32_t dstLength = 0;
 
   // Try to find callback here, so if we want to throw something we can use callback's err
   if (info[info.Length() - 1]->IsFunction()) {
