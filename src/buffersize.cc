@@ -49,24 +49,24 @@ NAN_METHOD(BufferSize) {
   }
 
   // Width
-  Local<Value> widthObject = options->Get(New("width").ToLocalChecked());
+  Local<Value> widthObject = options->Get(ctx, New("width").ToLocalChecked()).ToLocalChecked();
   if (widthObject->IsUndefined()) {
     _throw("Missing width");
   }
   if (!widthObject->IsUint32()) {
     _throw("Invalid width value");
   }
-  uint32_t width = widthObject->Uint32Value();
+  uint32_t width = widthObject->Uint32Value(ctx).ToChecked();
 
   // Height
-  Local<Value> heightObject = options->Get(New("height").ToLocalChecked());
+  Local<Value> heightObject = options->Get(ctx, New("height").ToLocalChecked()).ToLocalChecked();
   if (heightObject->IsUndefined()) {
     _throw("Missing height");
   }
   if (!heightObject->IsUint32()) {
     _throw("Invalid height value");
   }
-  uint32_t height = heightObject->Uint32Value();
+  uint32_t height = heightObject->Uint32Value(ctx).ToChecked();
 
   // Finally, calculate the buffer size
   uint32_t dstLength = tjBufSize(width, height, jpegSubsamp);
