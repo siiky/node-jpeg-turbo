@@ -10,14 +10,6 @@ NAN_METHOD(BufferSize) {
 
   // Input
   Callback *callback = NULL;
-  Local<Object> options;
-  Local<Value> sampObject;
-  uint32_t jpegSubsamp = NJT_DEFAULT_SUBSAMPLING;
-  Local<Value> widthObject;
-  uint32_t width = 0;
-  Local<Value> heightObject;
-  uint32_t height = 0;
-  uint32_t dstLength = 0;
 
   // Try to find callback here, so if we want to throw something we can use callback's err
   if (info[info.Length() - 1]->IsFunction()) {
@@ -29,13 +21,14 @@ NAN_METHOD(BufferSize) {
   }
 
   // Options
-  options = info[0].As<Object>();
+  Local<Object> options = info[0].As<Object>();
   if (!options->IsObject()) {
     _throw("Options must be an Object");
   }
 
   // Subsampling
-  sampObject = options->Get(New("subsampling").ToLocalChecked());
+  uint32_t jpegSubsamp = NJT_DEFAULT_SUBSAMPLING;
+  Local<Value> sampObject = options->Get(New("subsampling").ToLocalChecked());
   if (!sampObject->IsUndefined()) {
     if (!sampObject->IsUint32()) {
       _throw("Invalid subsampling method");
@@ -55,27 +48,27 @@ NAN_METHOD(BufferSize) {
   }
 
   // Width
-  widthObject = options->Get(New("width").ToLocalChecked());
+  Local<Value> widthObject = options->Get(New("width").ToLocalChecked());
   if (widthObject->IsUndefined()) {
     _throw("Missing width");
   }
   if (!widthObject->IsUint32()) {
     _throw("Invalid width value");
   }
-  width = widthObject->Uint32Value();
+  uint32_t width = widthObject->Uint32Value();
 
   // Height
-  heightObject = options->Get(New("height").ToLocalChecked());
+  Local<Value> heightObject = options->Get(New("height").ToLocalChecked());
   if (heightObject->IsUndefined()) {
     _throw("Missing height");
   }
   if (!heightObject->IsUint32()) {
     _throw("Invalid height value");
   }
-  height = heightObject->Uint32Value();
+  uint32_t height = heightObject->Uint32Value();
 
   // Finally, calculate the buffer size
-  dstLength = tjBufSize(width, height, jpegSubsamp);
+  uint32_t dstLength = tjBufSize(width, height, jpegSubsamp);
 
   // How to return length
   if (NULL != callback) {
