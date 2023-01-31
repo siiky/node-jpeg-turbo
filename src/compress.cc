@@ -287,7 +287,7 @@ void compressParse(const Nan::FunctionCallbackInfo<Value>& info, bool async) {
   // Quality
   qualityObject = options->Get(ctx, New("quality").ToLocalChecked()).ToLocalChecked();
   if (!qualityObject->IsUndefined()) {
-    if (!qualityObject->IsUint32() || qualityObject->Uint32Value() > 100) {
+    if (!qualityObject->IsUint32() || qualityObject->Uint32Value(ctx).ToChecked() > 100) {
       _throw("Invalid quality value");
     }
     quality = qualityObject->Uint32Value(ctx).ToChecked();
