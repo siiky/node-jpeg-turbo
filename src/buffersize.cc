@@ -6,6 +6,7 @@ static char errStr[NJT_MSG_LENGTH_MAX] = "No error";
 #define _throw(m) {snprintf(errStr, NJT_MSG_LENGTH_MAX, "%s", m); retval=-1; goto bailout;}
 
 NAN_METHOD(BufferSize) {
+  auto ctx = Nan::GetCurrentContext();
   int retval = 0;
 
   // Input
@@ -28,12 +29,12 @@ NAN_METHOD(BufferSize) {
 
   // Subsampling
   uint32_t jpegSubsamp = NJT_DEFAULT_SUBSAMPLING;
-  Local<Value> sampObject = options->Get(New("subsampling").ToLocalChecked());
+  Local<Value> sampObject = options->Get(ctx, New("subsampling").ToLocalChecked()).ToLocalChecked();
   if (!sampObject->IsUndefined()) {
     if (!sampObject->IsUint32()) {
       _throw("Invalid subsampling method");
     }
-    jpegSubsamp = sampObject->Uint32Value();
+    jpegSubsamp = sampObject->Uint32Value(ctx).ToChecked();
   }
 
   switch (jpegSubsamp) {
