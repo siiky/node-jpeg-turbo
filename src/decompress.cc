@@ -144,7 +144,7 @@ class DecompressWorker : public AsyncWorker {
         obj
       };
 
-      callback->Call(2, argv);
+      callback->Call(2, argv, nullptr);
     }
 
   private:
@@ -274,7 +274,7 @@ void decompressParse(const Nan::FunctionCallbackInfo<Value>& info, bool async) {
       Local<Value> argv[] = {
         New(errStr).ToLocalChecked()
       };
-      callback->Call(1, argv);
+      callback->Call(1, argv, nullptr);
     }
     return;
   }

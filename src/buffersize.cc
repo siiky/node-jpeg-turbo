@@ -77,7 +77,7 @@ NAN_METHOD(BufferSize) {
       Null(),
       New(dstLength)
     };
-    callback->Call(2, argv);
+    callback->Call(2, argv, nullptr);
   }
   else {
     info.GetReturnValue().Set(New(dstLength));
@@ -93,7 +93,7 @@ NAN_METHOD(BufferSize) {
       Local<Value> argv[] = {
         New(errStr).ToLocalChecked()
       };
-      callback->Call(1, argv);
+      callback->Call(1, argv, nullptr);
     }
     return;
   }
