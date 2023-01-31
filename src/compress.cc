@@ -320,8 +320,8 @@ void compressParse(const Nan::FunctionCallbackInfo<Value>& info, bool async) {
       dstObject = NewBuffer((char*)dstData, jpegSize, compressBufferFreeCallback, NULL).ToLocalChecked();
     }
 
-    obj->Set(New("data").ToLocalChecked(), dstObject);
-    obj->Set(New("size").ToLocalChecked(), New((uint32_t) jpegSize));
+    obj->Set(ctx, New("data").ToLocalChecked(), dstObject).Check();
+    obj->Set(ctx, New("size").ToLocalChecked(), New((uint32_t) jpegSize)).Check();
     info.GetReturnValue().Set(obj);
     return;
   }
