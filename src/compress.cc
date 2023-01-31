@@ -234,7 +234,7 @@ void compressParse(const Nan::FunctionCallbackInfo<Value>& info, bool async) {
   }
 
   // Format of input buffer
-  formatObject = options->Get(ctx, New("format").ToLocalChecked());
+  formatObject = options->Get(ctx, New("format").ToLocalChecked()).ToLocalChecked();
   if (formatObject->IsUndefined()) {
     _throw("Missing format");
   }
@@ -244,7 +244,7 @@ void compressParse(const Nan::FunctionCallbackInfo<Value>& info, bool async) {
   format = formatObject->Uint32Value(ctx).ToChecked();
 
   // Subsampling
-  sampObject = options->Get(ctx, New("subsampling").ToLocalChecked());
+  sampObject = options->Get(ctx, New("subsampling").ToLocalChecked()).ToLocalChecked();
   if (!sampObject->IsUndefined()) {
     if (!sampObject->IsUint32()) {
       _throw("Invalid subsampling method");
@@ -253,7 +253,7 @@ void compressParse(const Nan::FunctionCallbackInfo<Value>& info, bool async) {
   }
 
   // Width
-  widthObject = options->Get(New("width").ToLocalChecked());
+  widthObject = options->Get(ctx, New("width").ToLocalChecked()).ToLocalChecked();
   if (widthObject->IsUndefined()) {
     _throw("Missing width");
   }
@@ -263,7 +263,7 @@ void compressParse(const Nan::FunctionCallbackInfo<Value>& info, bool async) {
   width = widthObject->Uint32Value(ctx).ToChecked();
 
   // Height
-  heightObject = options->Get(New("height").ToLocalChecked());
+  heightObject = options->Get(ctx, New("height").ToLocalChecked()).ToLocalChecked();
   if (heightObject->IsUndefined()) {
     _throw("Missing height");
   }
@@ -273,7 +273,7 @@ void compressParse(const Nan::FunctionCallbackInfo<Value>& info, bool async) {
   height = heightObject->Uint32Value(ctx).ToChecked();
 
   // Stride
-  strideObject = options->Get(New("stride").ToLocalChecked());
+  strideObject = options->Get(ctx, New("stride").ToLocalChecked()).ToLocalChecked();
   if (!strideObject->IsUndefined()) {
     if (!strideObject->IsUint32()) {
       _throw("Invalid stride value");
@@ -285,7 +285,7 @@ void compressParse(const Nan::FunctionCallbackInfo<Value>& info, bool async) {
   }
 
   // Quality
-  qualityObject = options->Get(New("quality").ToLocalChecked());
+  qualityObject = options->Get(ctx, New("quality").ToLocalChecked()).ToLocalChecked();
   if (!qualityObject->IsUndefined()) {
     if (!qualityObject->IsUint32() || qualityObject->Uint32Value() > 100) {
       _throw("Invalid quality value");
