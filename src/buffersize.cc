@@ -9,6 +9,15 @@ NAN_METHOD(BufferSize) {
   auto ctx = Nan::GetCurrentContext();
   int retval = 0;
 
+  uint32_t dstLength = 0;
+  uint32_t height = 0;
+  uint32_t width = 0;
+  uint32_t jpegSubsamp = NJT_DEFAULT_SUBSAMPLING;
+  Local<Value> widthObject;
+  Local<Value> heightObject;
+  Local<Value> sampObject;
+  Local<Object> options;
+
   // Input
   Callback *callback = NULL;
 
@@ -22,14 +31,13 @@ NAN_METHOD(BufferSize) {
   }
 
   // Options
-  Local<Object> options = info[0].As<Object>();
+  options = info[0].As<Object>();
   if (!options->IsObject()) {
     _throw("Options must be an Object");
   }
 
   // Subsampling
-  uint32_t jpegSubsamp = NJT_DEFAULT_SUBSAMPLING;
-  Local<Value> sampObject = options->Get(ctx, New("subsampling").ToLocalChecked()).ToLocalChecked();
+  sampObject = options->Get(ctx, New("subsampling").ToLocalChecked()).ToLocalChecked();
   if (!sampObject->IsUndefined()) {
     if (!sampObject->IsUint32()) {
       _throw("Invalid subsampling method");
@@ -49,27 +57,27 @@ NAN_METHOD(BufferSize) {
   }
 
   // Width
-  Local<Value> widthObject = options->Get(ctx, New("width").ToLocalChecked()).ToLocalChecked();
+  widthObject = options->Get(ctx, New("width").ToLocalChecked()).ToLocalChecked();
   if (widthObject->IsUndefined()) {
     _throw("Missing width");
   }
   if (!widthObject->IsUint32()) {
     _throw("Invalid width value");
   }
-  uint32_t width = widthObject->Uint32Value(ctx).ToChecked();
+  width = widthObject->Uint32Value(ctx).ToChecked();
 
   // Height
-  Local<Value> heightObject = options->Get(ctx, New("height").ToLocalChecked()).ToLocalChecked();
+  heightObject = options->Get(ctx, New("height").ToLocalChecked()).ToLocalChecked();
   if (heightObject->IsUndefined()) {
     _throw("Missing height");
   }
   if (!heightObject->IsUint32()) {
     _throw("Invalid height value");
   }
-  uint32_t height = heightObject->Uint32Value(ctx).ToChecked();
+  height = heightObject->Uint32Value(ctx).ToChecked();
 
   // Finally, calculate the buffer size
-  uint32_t dstLength = tjBufSize(width, height, jpegSubsamp);
+  dstLength = tjBufSize(width, height, jpegSubsamp);
 
   // How to return length
   if (NULL != callback) {
