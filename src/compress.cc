@@ -132,6 +132,7 @@ class CompressWorker : public AsyncWorker {
     }
 
     void HandleOKCallback () {
+      auto ctx = Nan::GetCurrentContext();
       Local<Object> obj = New<Object>();
       Local<Object> dstObject;
 
@@ -142,15 +143,15 @@ class CompressWorker : public AsyncWorker {
         dstObject = NewBuffer((char*)this->dstData, this->jpegSize, compressBufferFreeCallback, NULL).ToLocalChecked();
       }
 
-      obj->Set(New("data").ToLocalChecked(), dstObject);
-      obj->Set(New("size").ToLocalChecked(), New((uint32_t) this->jpegSize));
+      obj->Set(ctx, New("data").ToLocalChecked(), dstObject).Check();
+      obj->Set(ctx, New("size").ToLocalChecked(), New((uint32_t) this->jpegSize)).Check();
 
       v8::Local<v8::Value> argv[] = {
         Nan::Null(),
         obj
       };
 
-      callback->Call(2, argv);
+      callback->Call(2, argv, nullptr);
     }
 
   private:
@@ -167,6 +168,7 @@ class CompressWorker : public AsyncWorker {
 };
 
 void compressParse(const Nan::FunctionCallbackInfo<Value>& info, bool async) {
+  auto ctx = Nan::GetCurrentContext();
   int retval = 0;
   int cursor = 0;
 
@@ -232,63 +234,63 @@ void compressParse(const Nan::FunctionCallbackInfo<Value>& info, bool async) {
   }
 
   // Format of input buffer
-  formatObject = options->Get(New("format").ToLocalChecked());
+  formatObject = options->Get(ctx, New("format").ToLocalChecked()).ToLocalChecked();
   if (formatObject->IsUndefined()) {
     _throw("Missing format");
   }
   if (!formatObject->IsUint32()) {
     _throw("Invalid input format");
   }
-  format = formatObject->Uint32Value();
+  format = formatObject->Uint32Value(ctx).ToChecked();
 
   // Subsampling
-  sampObject = options->Get(New("subsampling").ToLocalChecked());
+  sampObject = options->Get(ctx, New("subsampling").ToLocalChecked()).ToLocalChecked();
   if (!sampObject->IsUndefined()) {
     if (!sampObject->IsUint32()) {
       _throw("Invalid subsampling method");
     }
-    jpegSubsamp = sampObject->Uint32Value();
+    jpegSubsamp = sampObject->Uint32Value(ctx).ToChecked();
   }
 
   // Width
-  widthObject = options->Get(New("width").ToLocalChecked());
+  widthObject = options->Get(ctx, New("width").ToLocalChecked()).ToLocalChecked();
   if (widthObject->IsUndefined()) {
     _throw("Missing width");
   }
   if (!widthObject->IsUint32()) {
     _throw("Invalid width value");
   }
-  width = widthObject->Uint32Value();
+  width = widthObject->Uint32Value(ctx).ToChecked();
 
   // Height
-  heightObject = options->Get(New("height").ToLocalChecked());
+  heightObject = options->Get(ctx, New("height").ToLocalChecked()).ToLocalChecked();
   if (heightObject->IsUndefined()) {
     _throw("Missing height");
   }
   if (!heightObject->IsUint32()) {
     _throw("Invalid height value");
   }
-  height = heightObject->Uint32Value();
+  height = heightObject->Uint32Value(ctx).ToChecked();
 
   // Stride
-  strideObject = options->Get(New("stride").ToLocalChecked());
+  strideObject = options->Get(ctx, New("stride").ToLocalChecked()).ToLocalChecked();
   if (!strideObject->IsUndefined()) {
     if (!strideObject->IsUint32()) {
       _throw("Invalid stride value");
     }
-    stride = strideObject->Uint32Value();
+    stride = strideObject->Uint32Value(ctx).ToChecked();
   }
   else {
     stride = width;
   }
 
   // Quality
-  qualityObject = options->Get(New("quality").ToLocalChecked());
+  qualityObject = options->Get(ctx, New("quality").ToLocalChecked()).ToLocalChecked();
   if (!qualityObject->IsUndefined()) {
-    if (!qualityObject->IsUint32() || qualityObject->Uint32Value() > 100) {
+    if (!qualityObject->IsUint32() || qualityObject->Uint32Value(ctx).ToChecked() > 100) {
       _throw("Invalid quality value");
     }
-    quality = qualityObject->Uint32Value();
+    quality = qualityObject->Uint32Value(ctx).ToChecked();
   }
 
   // Do either async or sync compress
@@ -318,8 +320,8 @@ void compressParse(const Nan::FunctionCallbackInfo<Value>& info, bool async) {
       dstObject = NewBuffer((char*)dstData, jpegSize, compressBufferFreeCallback, NULL).ToLocalChecked();
     }
 
-    obj->Set(New("data").ToLocalChecked(), dstObject);
-    obj->Set(New("size").ToLocalChecked(), New((uint32_t) jpegSize));
+    obj->Set(ctx, New("data").ToLocalChecked(), dstObject).Check();
+    obj->Set(ctx, New("size").ToLocalChecked(), New((uint32_t) jpegSize)).Check();
     info.GetReturnValue().Set(obj);
     return;
   }
@@ -334,7 +336,7 @@ void compressParse(const Nan::FunctionCallbackInfo<Value>& info, bool async) {
       Local<Value> argv[] = {
         New(errStr).ToLocalChecked()
       };
-      callback->Call(1, argv);
+      callback->Call(1, argv, nullptr);
     }
     return;
   }

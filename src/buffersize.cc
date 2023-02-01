@@ -6,6 +6,7 @@ static char errStr[NJT_MSG_LENGTH_MAX] = "No error";
 #define _throw(m) {snprintf(errStr, NJT_MSG_LENGTH_MAX, "%s", m); retval=-1; goto bailout;}
 
 NAN_METHOD(BufferSize) {
+  auto ctx = Nan::GetCurrentContext();
   int retval = 0;
 
   // Input
@@ -35,12 +36,12 @@ NAN_METHOD(BufferSize) {
   }
 
   // Subsampling
-  sampObject = options->Get(New("subsampling").ToLocalChecked());
+  sampObject = options->Get(ctx, New("subsampling").ToLocalChecked()).ToLocalChecked();
   if (!sampObject->IsUndefined()) {
     if (!sampObject->IsUint32()) {
       _throw("Invalid subsampling method");
     }
-    jpegSubsamp = sampObject->Uint32Value();
+    jpegSubsamp = sampObject->Uint32Value(ctx).ToChecked();
   }
 
   switch (jpegSubsamp) {
@@ -55,24 +56,24 @@ NAN_METHOD(BufferSize) {
   }
 
   // Width
-  widthObject = options->Get(New("width").ToLocalChecked());
+  widthObject = options->Get(ctx, New("width").ToLocalChecked()).ToLocalChecked();
   if (widthObject->IsUndefined()) {
     _throw("Missing width");
   }
   if (!widthObject->IsUint32()) {
     _throw("Invalid width value");
   }
-  width = widthObject->Uint32Value();
+  width = widthObject->Uint32Value(ctx).ToChecked();
 
   // Height
-  heightObject = options->Get(New("height").ToLocalChecked());
+  heightObject = options->Get(ctx, New("height").ToLocalChecked()).ToLocalChecked();
   if (heightObject->IsUndefined()) {
     _throw("Missing height");
   }
   if (!heightObject->IsUint32()) {
     _throw("Invalid height value");
   }
-  height = heightObject->Uint32Value();
+  height = heightObject->Uint32Value(ctx).ToChecked();
 
   // Finally, calculate the buffer size
   dstLength = tjBufSize(width, height, jpegSubsamp);
@@ -83,7 +84,7 @@ NAN_METHOD(BufferSize) {
       Null(),
       New(dstLength)
     };
-    callback->Call(2, argv);
+    callback->Call(2, argv, nullptr);
   }
   else {
     info.GetReturnValue().Set(New(dstLength));
@@ -99,7 +100,7 @@ NAN_METHOD(BufferSize) {
       Local<Value> argv[] = {
         New(errStr).ToLocalChecked()
       };
-      callback->Call(1, argv);
+      callback->Call(1, argv, nullptr);
     }
     return;
   }
