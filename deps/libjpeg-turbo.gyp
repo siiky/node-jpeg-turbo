@@ -141,6 +141,7 @@
           ],
           'sources': [
             'libjpeg-turbo/simd/jsimd_x86_64.c',
+            'libjpeg-turbo/simd/jchuff-sse2-64.asm',
             'libjpeg-turbo/simd/jccolor-sse2-64.asm',
             'libjpeg-turbo/simd/jcgray-sse2-64.asm',
             'libjpeg-turbo/simd/jcsample-sse2-64.asm',
